@@ -21,8 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Kuizu"
 include(":app")
-include(":quiz_extractor")
-include(":quiz")
-include(":database")
-include(":core")
-include(":quiz:session")
+ 
