@@ -14,7 +14,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 fun BottomNavBar(
     navController: NavController
 ) {
-    val entries = ScreenRoute.entries
+    val entries = TabRoute.tabbedEntries
     val backStackEntry by navController.currentBackStackEntryFlow.collectAsState(null)
 
     backStackEntry?.let { backStackEntry ->
@@ -24,8 +24,10 @@ fun BottomNavBar(
                 NavigationBarItem(
                     selected = isSelected,
                     onClick = {
-                        if(!isSelected)
+                        if(!isSelected) {
+                            navController.popBackStack(TabRoute.QuizRoute, false)
                             navController.navigate(route)
+                        }
                     },
                     icon = {
                         Icon(route.iconImage, contentDescription = "Localized description")
