@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 @Composable
 fun QuizzesScreen(
     navController: NavController,
+    counter : Int
 ) {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
@@ -48,6 +49,7 @@ fun QuizzesScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text("Home Route")
+            Text("Counter: $counter")
             ElevatedButton(
                 onClick = {
                 }
