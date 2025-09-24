@@ -53,7 +53,6 @@ import com.rizzard23.kuizu.data.repository.Quiz
 import com.rizzard23.kuizu.presentation.components.AddQuizDialogContent
 import com.rizzard23.kuizu.presentation.components.SortModalSheet
 import com.rizzard23.kuizu.presentation.navigation.RootRoutes
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
@@ -63,19 +62,6 @@ sealed interface QuizzesScreenEvent {
     data class AddDialogToggle(val value : Boolean) : QuizzesScreenEvent
 
     data class NavigateToQuiz(val id : String) : QuizzesScreenEvent
-}
-
-@Composable
-inline fun debounced(crossinline onClick: () -> Unit, debounceTime: Long = 1000L): () -> Unit {
-    var lastTimeClicked by remember { mutableLongStateOf(0L) }
-    val onClickLambda: () -> Unit = {
-        val now = SystemClock.uptimeMillis()
-        if (now - lastTimeClicked > debounceTime) {
-            onClick()
-        }
-        lastTimeClicked = now
-    }
-    return onClickLambda
 }
 
 @Composable
@@ -105,10 +91,10 @@ fun QuizzesScreen(
                     quizzesViewModel.setAddDialogVisibility(event.value)
                 }
                 is QuizzesScreenEvent.NavigateToQuiz -> {
-                    quizzesViewModel.debouncedNavigate {
-                        rootNavController.navigate(
-                            RootRoutes.QuizDetails(event.id)
-                        )
+                    rootNavController.navigate(
+                        RootRoutes.QuizDetails(event.id)
+                    ) {
+                        launchSingleTop = true
                     }
                 }
             }
@@ -126,16 +112,12 @@ private fun Content(
     isAddDialogOpen: Boolean
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
 
     if(isBottomSheetOpen)
         SortModalSheet(
             bottomSheetState = bottomSheetState,
             onDismissRequest = {
-                scope.launch {
-                    bottomSheetState.hide()
-                    onEvent(QuizzesScreenEvent.BottomSheetToggle(false))
-                }
+                onEvent(QuizzesScreenEvent.BottomSheetToggle(false))
             }
         )
 
@@ -175,10 +157,7 @@ private fun Content(
                     }
                     IconButton(
                         onClick = {
-                            scope.launch {
-                                onEvent(QuizzesScreenEvent.BottomSheetToggle(true))
-                                bottomSheetState.show()
-                            }
+                            onEvent(QuizzesScreenEvent.BottomSheetToggle(true))
                         }
                     ) {
                         Icon(
