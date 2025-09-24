@@ -23,7 +23,8 @@ fun TabNavigationGraph(
         NavHost(
             navController = navController,
             startDestination = TabRoute.QuizRoute,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+
         ) {
             composable<TabRoute.QuizRoute> {
                 QuizzesScreen(
@@ -40,7 +41,9 @@ fun TabNavigationGraph(
                 SettingsScreen(
                     navController = navController,
                     onOtherRoute = {
-                        rootNavController.navigate(RootRoutes.OtherRoute)
+                        rootNavController.navigate(RootRoutes.OtherRoute) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
