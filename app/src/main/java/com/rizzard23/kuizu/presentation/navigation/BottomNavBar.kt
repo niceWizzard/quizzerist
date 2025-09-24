@@ -3,6 +3,7 @@ package com.rizzard23.kuizu.presentation.navigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,7 +17,6 @@ fun BottomNavBar(
 ) {
     val entries = TabRoute.tabbedEntries
     val backStackEntry by navController.currentBackStackEntryFlow.collectAsState(null)
-
     backStackEntry?.let { backStackEntry ->
         NavigationBar {
             entries.forEachIndexed { index,route ->
