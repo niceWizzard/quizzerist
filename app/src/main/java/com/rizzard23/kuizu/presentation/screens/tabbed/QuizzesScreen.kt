@@ -33,10 +33,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -54,20 +51,26 @@ import kotlin.random.Random
 
 sealed interface QuizzesScreenEvent {
     object FabButtonPressed : QuizzesScreenEvent
-
+    data class BottomSheetToggle(val value : Boolean) : QuizzesScreenEvent
 }
 
 @Composable
 fun QuizzesScreen(navController: NavController) {
     val quizzesViewModel : QuizzesViewModel = koinViewModel()
     val quizzes by quizzesViewModel.quizzesFlow.collectAsState()
+    val isBottomSheetOpen by quizzesViewModel.isBottomSheetOpen.collectAsState()
     Content(
         navController = navController,
         quizzes = quizzes,
+        isBottomSheetOpen = isBottomSheetOpen,
         onEvent = { event ->
             when(event) {
                 QuizzesScreenEvent.FabButtonPressed -> {
                     quizzesViewModel.addQuiz()
+                }
+
+                is QuizzesScreenEvent.BottomSheetToggle -> {
+                    quizzesViewModel.setBottomSheetVisibility(event.value)
                 }
             }
         }
@@ -80,9 +83,8 @@ private fun Content(
     navController: NavController,
     quizzes : List<Quiz>,
     onEvent: (QuizzesScreenEvent) -> Unit,
+    isBottomSheetOpen: Boolean
 ) {
-
-    var isBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -92,7 +94,7 @@ private fun Content(
             onDismissRequest = {
                 scope.launch {
                     bottomSheetState.hide()
-                    isBottomSheetOpen = false
+                    onEvent(QuizzesScreenEvent.BottomSheetToggle(false))
                 }
             }
         )
@@ -115,7 +117,7 @@ private fun Content(
                     IconButton(
                         onClick = {
                             scope.launch {
-                                isBottomSheetOpen = true
+                                onEvent(QuizzesScreenEvent.BottomSheetToggle(true))
                                 bottomSheetState.show()
                             }
                         }
@@ -206,6 +208,7 @@ private fun QuizzesScreenPreview() {
                     remoteId = Random.nextBytes(15).toString(),
                 )
             },
+            isBottomSheetOpen = false,
             onEvent = {}
         )
     }
