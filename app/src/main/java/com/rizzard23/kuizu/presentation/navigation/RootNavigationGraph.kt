@@ -42,32 +42,7 @@ fun RootNavigationGraph() {
                     rootNavController = navController,
                 )
             }
-            composable<RootRoutes.OtherRoute>(
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it /2 },
-                        animationSpec = tween(100)
-                    ) + fadeIn(animationSpec = tween(100))
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it /2 },
-                        animationSpec = tween(100)
-                    ) + fadeOut(animationSpec = tween(100))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it /2 },
-                        animationSpec = tween(100)
-                    ) + fadeIn(animationSpec = tween(100))
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = {it /2 },
-                        animationSpec = tween(100)
-                    ) + fadeOut(animationSpec = tween(100))
-                }
-            ) {
+            composable<RootRoutes.OtherRoute>{
                 Scaffold(
                     topBar = {
                         TopAppBar(
