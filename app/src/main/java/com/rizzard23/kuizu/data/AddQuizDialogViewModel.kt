@@ -3,6 +3,7 @@ package com.rizzard23.kuizu.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rizzard23.kuizu.data.repository.Quiz
+import com.rizzard23.kuizu.data.repository.QuizRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,9 @@ sealed interface AddQuizDialogState {
     object Parsing : AddQuizDialogState
 }
 
-class AddQuizDialogViewModel: ViewModel() {
+class AddQuizDialogViewModel (
+    private val quizRepository: QuizRepository
+): ViewModel() {
     private val _quizUrlInput  = MutableStateFlow("")
     private val _state = MutableStateFlow<AddQuizDialogState>(AddQuizDialogState.Normal)
 
@@ -55,13 +58,9 @@ class AddQuizDialogViewModel: ViewModel() {
             _state.value = AddQuizDialogState.Parsing
             delay(500)
             _state.value = AddQuizDialogState.Normal
+            val quiz = quizRepository.addQuiz()
             _dialogProcessFinishEvent.emit(
-                Quiz(
-                    id = _quizUrlInput.value,
-                    name = "Name: ${Random.nextBytes(10)}",
-                    author = "Name: ${Random.nextBytes(13)}",
-                    remoteId = "Remote Id: ${Random.nextBytes(15)}"
-                )
+                quiz
             )
         }
 

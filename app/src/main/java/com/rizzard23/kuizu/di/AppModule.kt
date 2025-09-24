@@ -14,6 +14,6 @@ val appModule = module {
         QuizRepository()
     }
     viewModel {
-        AddQuizDialogViewModel()
+        AddQuizDialogViewModel(get())
     }
 }

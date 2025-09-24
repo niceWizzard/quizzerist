@@ -23,13 +23,15 @@ class QuizRepository {
     val quizzesListFlow = _quizzesListFlow.asStateFlow()
 
 
-    suspend fun addQuiz() {
-        _quizzesListFlow.value += Quiz(
+    suspend fun addQuiz() : Quiz {
+        val quiz = Quiz(
             _quizzesListFlow.value.size.toString(),
             Random.nextBytes(100).toString(),
             author = "WOW ${Random.nextBytes(10)}",
             remoteId = Random.nextBytes(10).toString(),
         )
+        _quizzesListFlow.value += quiz
+        return quiz
     }
 
 
