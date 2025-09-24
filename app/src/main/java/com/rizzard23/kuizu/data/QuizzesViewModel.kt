@@ -12,10 +12,13 @@ class QuizzesViewModel(
     private val quizRepository: QuizRepository
 ) : ViewModel() {
     private val _isBottomSheetOpen = MutableStateFlow(false)
+    private val _isAddDialogOpen = MutableStateFlow(false)
 
     val quizzesFlow = quizRepository.quizzesListFlow
 
     val isBottomSheetOpen = _isBottomSheetOpen.asStateFlow()
+    val isAddDialogOpen = _isAddDialogOpen.asStateFlow()
+
     fun addQuiz() {
         viewModelScope.launch {
             quizRepository.addQuiz()
@@ -26,6 +29,9 @@ class QuizzesViewModel(
         _isBottomSheetOpen.value = value
     }
 
+    fun setAddDialogVisibility(value : Boolean) {
+        _isAddDialogOpen.value = value
+    }
 
 
 }

@@ -1,10 +1,12 @@
 package com.rizzard23.kuizu.presentation.navigation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavBackStackEntry
 import kotlinx.serialization.Serializable
 
 sealed interface TabRoute  {
@@ -37,7 +39,8 @@ sealed interface TabRoute  {
 }
 
 sealed interface RootRoutes  {
-
+    @Serializable
+    data class  QuizDetails(val id : String) : RootRoutes
 
     @Serializable
     object MainRoute : RootRoutes

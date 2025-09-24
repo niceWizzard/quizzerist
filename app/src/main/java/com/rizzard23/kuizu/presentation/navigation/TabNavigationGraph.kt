@@ -28,6 +28,7 @@ fun TabNavigationGraph(
             composable<TabRoute.QuizRoute> {
                 QuizzesScreen(
                     navController = navController,
+                    rootNavController = rootNavController,
                 )
             }
             composable<TabRoute.SessionRoute> {

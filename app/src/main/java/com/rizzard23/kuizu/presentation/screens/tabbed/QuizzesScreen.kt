@@ -40,11 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rizzard23.kuizu.data.QuizzesViewModel
 import com.rizzard23.kuizu.data.repository.Quiz
+import com.rizzard23.kuizu.presentation.components.AddQuizDialogContent
 import com.rizzard23.kuizu.presentation.components.SortModalSheet
+import com.rizzard23.kuizu.presentation.navigation.RootRoutes
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
@@ -52,25 +55,41 @@ import kotlin.random.Random
 sealed interface QuizzesScreenEvent {
     object FabButtonPressed : QuizzesScreenEvent
     data class BottomSheetToggle(val value : Boolean) : QuizzesScreenEvent
+    data class AddDialogToggle(val value : Boolean) : QuizzesScreenEvent
+
+    data class NavigateToQuiz(val id : String) : QuizzesScreenEvent
 }
 
 @Composable
-fun QuizzesScreen(navController: NavController) {
+fun QuizzesScreen(
+    navController: NavController,
+    rootNavController: NavController,
+) {
     val quizzesViewModel : QuizzesViewModel = koinViewModel()
     val quizzes by quizzesViewModel.quizzesFlow.collectAsState()
     val isBottomSheetOpen by quizzesViewModel.isBottomSheetOpen.collectAsState()
+    val isAddDialogOpen by quizzesViewModel.isAddDialogOpen.collectAsState()
     Content(
         navController = navController,
         quizzes = quizzes,
         isBottomSheetOpen = isBottomSheetOpen,
+        isAddDialogOpen = isAddDialogOpen,
         onEvent = { event ->
             when(event) {
                 QuizzesScreenEvent.FabButtonPressed -> {
-                    quizzesViewModel.addQuiz()
+                    quizzesViewModel.setAddDialogVisibility(true)
                 }
 
                 is QuizzesScreenEvent.BottomSheetToggle -> {
                     quizzesViewModel.setBottomSheetVisibility(event.value)
+                }
+                is QuizzesScreenEvent.AddDialogToggle -> {
+                    quizzesViewModel.setAddDialogVisibility(event.value)
+                }
+                is QuizzesScreenEvent.NavigateToQuiz -> {
+                    rootNavController.navigate(
+                        RootRoutes.QuizDetails(event.id)
+                    )
                 }
             }
         }
@@ -81,9 +100,10 @@ fun QuizzesScreen(navController: NavController) {
 @Composable
 private fun Content(
     navController: NavController,
-    quizzes : List<Quiz>,
+    quizzes: List<Quiz>,
     onEvent: (QuizzesScreenEvent) -> Unit,
-    isBottomSheetOpen: Boolean
+    isBottomSheetOpen: Boolean,
+    isAddDialogOpen: Boolean
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -98,6 +118,25 @@ private fun Content(
                 }
             }
         )
+
+    if(isAddDialogOpen) {
+        Dialog(
+            onDismissRequest = {
+                onEvent(QuizzesScreenEvent.AddDialogToggle(false))
+            }
+        ) {
+            AddQuizDialogContent(
+                onDismissRequest = {
+                    onEvent(QuizzesScreenEvent.AddDialogToggle(false))
+                },
+                onQuizAdd = {
+                    onEvent(
+                        QuizzesScreenEvent.NavigateToQuiz(it.id)
+                    )
+                }
+            )
+        }
+    }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
@@ -194,6 +233,8 @@ private fun Content(
     }
 }
 
+
+
 @Preview(showSystemUi = true)
 @Composable
 private fun QuizzesScreenPreview() {
@@ -208,8 +249,9 @@ private fun QuizzesScreenPreview() {
                     remoteId = Random.nextBytes(15).toString(),
                 )
             },
+            onEvent = {},
             isBottomSheetOpen = false,
-            onEvent = {}
+            isAddDialogOpen = false,
         )
     }
 }

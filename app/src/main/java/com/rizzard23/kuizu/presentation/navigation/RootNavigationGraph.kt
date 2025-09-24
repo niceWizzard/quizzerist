@@ -58,6 +58,34 @@ fun RootNavigationGraph() {
                     }
                 }
             }
+
+            composable<RootRoutes.QuizDetails> {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    navController.popBackStack()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Localized description"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                ) { innerPadding ->
+                    Surface(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        Text("Quiz Details Screen")
+                    }
+                }
+            }
+
         }
 
     }
