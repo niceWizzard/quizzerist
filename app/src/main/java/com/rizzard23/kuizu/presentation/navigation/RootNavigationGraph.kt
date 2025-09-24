@@ -1,6 +1,11 @@
 package com.rizzard23.kuizu.presentation.navigation
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RootNavigationGraph() {
@@ -31,7 +37,32 @@ fun RootNavigationGraph() {
                     rootNavController = navController,
                 )
             }
-            composable<RootRoutes.OtherRoute> {
+            composable<RootRoutes.OtherRoute>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(300)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(300)
+                    ) + fadeOut(animationSpec = tween(300))
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(300)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(300)
+                    ) + fadeOut(animationSpec = tween(300))
+                }
+            ) {
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -59,7 +90,32 @@ fun RootNavigationGraph() {
                 }
             }
 
-            composable<RootRoutes.QuizDetails> {
+            composable<RootRoutes.QuizDetails>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(300)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(300)
+                    ) + fadeOut(animationSpec = tween(300))
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(300)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(300)
+                    ) + fadeOut(animationSpec = tween(300))
+                }
+            ) {
                 Scaffold(
                     topBar = {
                         TopAppBar(
