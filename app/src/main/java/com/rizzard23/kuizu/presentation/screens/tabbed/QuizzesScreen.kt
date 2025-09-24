@@ -1,6 +1,7 @@
 package com.rizzard23.kuizu.presentation.screens.tabbed
 
 import android.annotation.SuppressLint
+import android.os.SystemClock
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +63,19 @@ sealed interface QuizzesScreenEvent {
     data class AddDialogToggle(val value : Boolean) : QuizzesScreenEvent
 
     data class NavigateToQuiz(val id : String) : QuizzesScreenEvent
+}
+
+@Composable
+inline fun debounced(crossinline onClick: () -> Unit, debounceTime: Long = 1000L): () -> Unit {
+    var lastTimeClicked by remember { mutableLongStateOf(0L) }
+    val onClickLambda: () -> Unit = {
+        val now = SystemClock.uptimeMillis()
+        if (now - lastTimeClicked > debounceTime) {
+            onClick()
+        }
+        lastTimeClicked = now
+    }
+    return onClickLambda
 }
 
 @Composable
@@ -87,9 +105,11 @@ fun QuizzesScreen(
                     quizzesViewModel.setAddDialogVisibility(event.value)
                 }
                 is QuizzesScreenEvent.NavigateToQuiz -> {
-                    rootNavController.navigate(
-                        RootRoutes.QuizDetails(event.id)
-                    )
+                    quizzesViewModel.debouncedNavigate {
+                        rootNavController.navigate(
+                            RootRoutes.QuizDetails(event.id)
+                        )
+                    }
                 }
             }
         }
@@ -198,7 +218,9 @@ private fun Content(
                 items(quizzes) { quiz ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {}
+                        onClick = {
+                            onEvent(QuizzesScreenEvent.NavigateToQuiz(quiz.id))
+                        }
                     ) {
                         Column(
                             modifier = Modifier.padding(
