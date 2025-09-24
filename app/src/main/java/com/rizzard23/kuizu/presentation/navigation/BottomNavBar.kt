@@ -19,12 +19,15 @@ fun BottomNavBar(
 
     backStackEntry?.let { backStackEntry ->
         NavigationBar {
-            entries.forEach { route ->
+            entries.forEachIndexed { index,route ->
                 val isSelected = backStackEntry.destination.hasRoute(route::class)
                 NavigationBarItem(
                     selected = isSelected,
                     onClick = {
-                        if(!isSelected) {
+                        if(index == 0) {
+                            navController.popBackStack(TabRoute.QuizRoute, true)
+                            navController.navigate(route)
+                        } else if (!isSelected) {
                             navController.popBackStack(TabRoute.QuizRoute, false)
                             navController.navigate(route)
                         }
